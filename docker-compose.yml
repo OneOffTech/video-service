@@ -1,0 +1,32 @@
+# For more information: https://laravel.com/docs/sail
+version: '3'
+services:
+    # Laravel entry following the Sail convention
+    # is stored in docker-compose.override.yml.example
+    # If you want to use Laravel Sail for development copy
+    # docker-compose.override.yml.example to docker-compose.override.yml
+    mariadb:
+        image: 'mariadb:10.6'
+        ports:
+            - '${FORWARD_DB_PORT:-3306}:3306'
+        environment:
+            MYSQL_ROOT_HOST: "%"
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD:-password}'
+            MYSQL_DATABASE: '${DB_DATABASE:-laravel}'
+            MYSQL_USER: '${DB_USERNAME:-sail}'
+            MYSQL_PASSWORD: '${DB_PASSWORD:-password}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        volumes:
+            - 'sail-mariadb:/var/lib/mysql'
+        networks:
+            - sail
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+            retries: 3
+            timeout: 5s
+networks:
+    sail:
+        driver: bridge
+volumes:
+    sail-mariadb:
+        driver: local
