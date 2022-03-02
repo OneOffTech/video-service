@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "92eb001645c221a5af09ce1d7dc06d24",
+    "content-hash": "96fbd37d786ac132e6bfa0abf89b350e",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -424,6 +424,118 @@
                 }
             ],
             "time": "2022-01-18T15:43:28+00:00"
+        },
+        {
+            "name": "dyrynda/laravel-efficient-uuid",
+            "version": "4.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/michaeldyrynda/laravel-efficient-uuid.git",
+                "reference": "1eeb7546fc1be5b22cbf8a4866286142e51b3ce4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/michaeldyrynda/laravel-efficient-uuid/zipball/1eeb7546fc1be5b22cbf8a4866286142e51b3ce4",
+                "reference": "1eeb7546fc1be5b22cbf8a4866286142e51b3ce4",
+                "shasum": ""
+            },
+            "require": {
+                "dyrynda/laravel-model-uuid": "^6.6",
+                "illuminate/container": "^8.12|^9.0",
+                "illuminate/contracts": "^8.12|^9.0",
+                "illuminate/database": "^8.12|^9.0",
+                "php": "^7.3|^8.0",
+                "ramsey/uuid": "^4.1"
+            },
+            "require-dev": {
+                "laravel/legacy-factories": "^1.1",
+                "mockery/mockery": "^1.4.2",
+                "orchestra/testbench": "^6.0|^7.0",
+                "phpunit/phpunit": "^9.3"
+            },
+            "type": "utility",
+            "autoload": {
+                "psr-4": {
+                    "Dyrynda\\Database\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dyrynda",
+                    "email": "michael@dyrynda.com.au",
+                    "homepage": "https://dyrynda.com.au"
+                }
+            ],
+            "description": "A package to extend Laravel migrations adding a more efficient storage of UUID fields in your database",
+            "support": {
+                "issues": "https://github.com/michaeldyrynda/laravel-efficient-uuid/issues",
+                "source": "https://github.com/michaeldyrynda/laravel-efficient-uuid/tree/4.5.2"
+            },
+            "time": "2022-01-26T03:24:02+00:00"
+        },
+        {
+            "name": "dyrynda/laravel-model-uuid",
+            "version": "6.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/michaeldyrynda/laravel-model-uuid.git",
+                "reference": "8f8e7c20268869aeab4ea3939b89b7670fec9910"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/michaeldyrynda/laravel-model-uuid/zipball/8f8e7c20268869aeab4ea3939b89b7670fec9910",
+                "reference": "8f8e7c20268869aeab4ea3939b89b7670fec9910",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "^8.12|^9.0",
+                "illuminate/events": "^8.12|^9.0",
+                "illuminate/support": "^8.12|^9.0",
+                "php": "^7.3|^8.0",
+                "ramsey/uuid": "^4.1"
+            },
+            "require-dev": {
+                "dyrynda/laravel-efficient-uuid": "^4.5.1",
+                "laravel/legacy-factories": "^1.0.4",
+                "orchestra/testbench": "^6.0|^7.0",
+                "phpunit/phpunit": "^9.3"
+            },
+            "suggest": {
+                "dyrynda/laravel-efficient-uuid": "Override Laravel's default query grammar to efficiently store UUIDs."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Dyrynda\\Database\\Support\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dyrynda",
+                    "email": "michael@dyrynda.com.au",
+                    "homepage": "https://dyrynda.com.au"
+                }
+            ],
+            "description": "This package allows you to easily work with UUIDs in your Laravel models.",
+            "keywords": [
+                "eloquent",
+                "laravel",
+                "model",
+                "uuid"
+            ],
+            "support": {
+                "issues": "https://github.com/michaeldyrynda/laravel-model-uuid/issues",
+                "source": "https://github.com/michaeldyrynda/laravel-model-uuid/tree/6.6.2"
+            },
+            "time": "2022-01-26T03:30:35+00:00"
         },
         {
             "name": "egulias/email-validator",
