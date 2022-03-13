@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Management;
 
+use App\Enums\BlobRoles;
+use App\Events\UploadCompleted;
 use App\Http\Controllers\Controller;
 use App\Models\Blob;
 use App\Models\Video;
@@ -64,6 +66,7 @@ class VideoController extends Controller
 
         $blob = new Blob([
             'disk' => 'local',
+            'role' => BlobRoles::VIDEO,
             'name' => $file->getClientOriginalName(),
             'file_name' => $uploadPath,
             'mime_type' => $file->getMimeType(),
@@ -79,9 +82,12 @@ class VideoController extends Controller
 
             $videoEntry->blobs()->save($blob);
 
+            // TODO: attach the stub for the pipeline jobs
+
             return $videoEntry;
         });
 
+        event(new UploadCompleted($video));
 
         return response()->redirectToRoute('videos.edit', [$video->uuid]);
     }
