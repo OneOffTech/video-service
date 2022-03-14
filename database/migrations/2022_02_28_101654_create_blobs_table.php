@@ -23,11 +23,15 @@ return new class extends Migration
 
             $table->string('disk');
 
+            $table->string('conversions_disk');
+
             $table->string('name');
 
             $table->string('file_name');
 
             $table->string('mime_type');
+
+            $table->integer('role')->index();
 
             $table->unsignedBigInteger('size');
             
