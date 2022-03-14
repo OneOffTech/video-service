@@ -75,5 +75,6 @@ jobs:
         php artisan route:clear
         ./vendor/bin/phpunit --stop-on-error --stop-on-failure
       env:
-          FFMPEG_TEMPORARY_FILES_ROOT: ${{ github.workspace }}
+        FFMPEG_TEMPORARY_FILES_ROOT: ${{ github.workspace }}
+        DB_HOST: mariadb
     
