@@ -6,6 +6,7 @@ use App\Enums\BlobRoles;
 use Dyrynda\Database\Casts\EfficientUuid;
 use Illuminate\Database\Eloquent\Model;
 use Dyrynda\Database\Support\GeneratesUuid;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -17,6 +18,8 @@ class Blob extends Model
     protected $casts = [
         'uuid' => EfficientUuid::class,
         'role' => BlobRoles::class,
+        'conversions' => AsArrayObject::class,
+        'properties' => AsArrayObject::class,
     ];
 
     protected $fillable = [
