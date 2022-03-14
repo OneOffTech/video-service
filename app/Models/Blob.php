@@ -55,11 +55,28 @@ class Blob extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\App\Models\Video 
+     */
+    public function video()
+    {
+        return $this->belongsTo(Video::class);
+    }
+
+    /**
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeVideo($query)
     {
         return $query->where('role', BlobRoles::VIDEO);
+    }
+    
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeThumbnail($query)
+    {
+        return $query->where('role', BlobRoles::THUMBNAIL);
     }
 }

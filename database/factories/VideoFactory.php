@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,25 @@ class VideoFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'user_id' => User::factory(),
+            'title' => $this->faker->title(),
+            'description' => $this->faker->paragraph(),
+            'language' => 'en',
+            'license' => null,
         ];
+    }
+
+    /**
+     * Indicate that the video is published.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function published()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'published_at' => now(),
+            ];
+        });
     }
 }
