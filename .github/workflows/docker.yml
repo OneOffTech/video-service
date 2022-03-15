@@ -1,0 +1,44 @@
+name: Build Docker Image
+
+on: 
+  push:
+    branches: 
+      - "main"
+  release:
+    types: [published]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NAMESPACE_DOCKER_HUB: 'oneofftech/video-service'
+      COMMIT_SHA: ${{github.sha}}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+    - name: Define image version
+      run: |
+        export REF_SLUG=$(echo "$GITHUB_REF" | tr "[:upper:]" "[:lower:]" | sed -r 's#refs/[^\/]*/##;s/[~\^]+//g;s/[^a-zA-Z0-9.]+/-/g;s/^-+\|-+$//g;s/^-*//;s/-*$//' | cut -c1-63)
+        echo "IMAGE_VERSION=${REF_SLUG}" >> $GITHUB_ENV
+    - name: Build the Docker image 
+      run: |
+        echo ${{ env.IMAGE_VERSION }}
+        docker pull $NAMESPACE_DOCKER_HUB:latest || true
+        docker build --compress --cache-from $NAMESPACE_DOCKER_HUB:latest --build-arg BUILD_COMMIT=$COMMIT_SHA --build-arg BUILD_VERSION=${{ env.IMAGE_VERSION }} --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') -t $NAMESPACE_DOCKER_HUB:${{ env.IMAGE_VERSION }} .
+    # - name: Prepare push
+    #   uses: azure/docker-login@v1
+    #   if: github.event_name == 'release'
+    #   with:
+    #     username: ${{ secrets.CI_REGISTRY_USER }}
+    #     password: ${{ secrets.CI_REGISTRY_PASSWORD }}
+    # - name: Push the Docker image
+    #   if: github.event_name == 'release'
+    #   run: |
+    #     export IMAGE_TAG=${IMAGE_VERSION#v}
+    #     docker tag $NAMESPACE_DOCKER_HUB:$IMAGE_VERSION $NAMESPACE_DOCKER_HUB:$IMAGE_TAG
+    #     docker tag $NAMESPACE_DOCKER_HUB:$IMAGE_TAG $NAMESPACE_DOCKER_HUB:latest
+    #     docker push $NAMESPACE_DOCKER_HUB:$IMAGE_TAG
+    #     docker push $NAMESPACE_DOCKER_HUB:latest

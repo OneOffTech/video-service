@@ -1,0 +1,79 @@
+name: Tests
+
+on: 
+  push:
+    branches: 
+      - "main"
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  phpunit:
+    name: Tests PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    container: 
+      image: klinktech/k-box-ci-pipeline-php:${{ matrix.php }}
+      options: --user root 
+    
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_DATABASE: laravel
+          MYSQL_USER: sail
+          MYSQL_ROOT_PASSWORD: "password"
+          MYSQL_PASSWORD: "password"
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.1]
+    
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+    
+    - name: Cache PHP dependencies
+      uses: actions/cache@v1
+      with:
+        path: ~/.composer/cache/files
+        key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+    
+    - name: Cache JS dependencies
+      uses: actions/cache@v1
+      with:
+        path: ~/.yarn/
+        key: dependencies-js-${{ hashFiles('yarn.lock') }}
+
+    - name: Install FFmpeg
+      uses: Iamshankhadeep/setup-ffmpeg@ffmpeg-5.0-20220119
+      with:
+        version: 5.0
+      id: setup-ffmpeg
+      
+    - name: Install dependencies
+      run: |
+        cp .env.example .env
+        composer install --prefer-dist
+        yarn config set cache-folder ~/.yarn/
+        yarn install --link-duplicates
+        yarn run production
+
+    - name: Run tests
+      run: |
+        php artisan key:generate
+        php artisan view:clear
+        php artisan config:clear
+        php artisan route:clear
+        ./vendor/bin/phpunit --stop-on-error --stop-on-failure
+      env:
+        FFMPEG_TEMPORARY_FILES_ROOT: ${{ github.workspace }}
+        DB_HOST: mariadb
+        DB_USERNAME: sail
+        DB_PASSWORD: password
+    
