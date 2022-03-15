@@ -11,6 +11,9 @@ jobs:
   phpunit:
     name: Tests PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
+    container: 
+      image: klinktech/k-box-ci-pipeline-php:${{ matrix.php }}
+      options: --user root 
     
     services:
       mariadb:
@@ -47,12 +50,12 @@ jobs:
         path: ~/.yarn/
         key: dependencies-js-${{ hashFiles('yarn.lock') }}
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php }}
-        extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, bcmath, soap, intl, gd, exif, iconv, mysql, mysqli, pdo_mysql, fileinfo
-        coverage: none
+    # - name: Setup PHP
+    #   uses: shivammathur/setup-php@v2
+    #   with:
+    #     php-version: ${{ matrix.php }}
+    #     extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, bcmath, soap, intl, gd, exif, iconv, mysql, mysqli, pdo_mysql, fileinfo
+    #     coverage: none
 
     - name: Install FFmpeg
       uses: Iamshankhadeep/setup-ffmpeg@ffmpeg-5.0-20220119
