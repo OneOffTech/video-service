@@ -22,7 +22,7 @@ jobs:
           MYSQL_DATABASE: laravel
           MYSQL_USER: sail
           MYSQL_ROOT_PASSWORD: "password"
-          MYSQL_PASSWORD: null
+          MYSQL_PASSWORD: "password"
           MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
         ports:
           - 3306
@@ -74,4 +74,5 @@ jobs:
         FFMPEG_TEMPORARY_FILES_ROOT: ${{ github.workspace }}
         DB_HOST: mariadb
         DB_USERNAME: sail
+        DB_PASSWORD: password
     
