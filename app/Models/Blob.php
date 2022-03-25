@@ -80,6 +80,10 @@ class Blob extends Model
     {
         return Attribute::make(
             get: function($value, $attributes){
+                
+                if(!$attributes['conversions']){
+                    return null;
+                }
 
                 $hlsConversion = $this->castAttribute('conversions', $attributes['conversions'])->collect()->where('type', ConversionTargets::HLS->value)->first();
 
