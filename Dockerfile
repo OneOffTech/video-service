@@ -93,6 +93,8 @@ RUN set -e; \
     && tar -xf $linux_temp_archive --wildcards -O '**/ffprobe' > "$linux_temp/ffprobe" \
     && tar -xf $linux_temp_archive --wildcards -O '**/GPLv3.txt' > "$linux_temp/FFMPEG-LICENSE" \
     && tar -xf $linux_temp_archive --wildcards -O '**/readme.txt' > "$linux_temp/FFMPEG-README.txt" \
+    && chmod +x "$linux_temp/ffmpeg" \
+    && chmod +x "$linux_temp/ffprobe" \
     && rm -rf /tmp/*
 
 ## NGINX installation
