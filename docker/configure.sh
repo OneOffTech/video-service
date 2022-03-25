@@ -41,7 +41,6 @@ function startup_config () {
     wait_services &&
     install_or_update &&
     ensure_permissions_on_folders &&
-    activate_supervisor_configuration_files &&
 	echo "Configuration completed."
 
 }
