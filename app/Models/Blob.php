@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Enums\BlobRoles;
+use App\Enums\ConversionTargets;
 use Dyrynda\Database\Casts\EfficientUuid;
 use Illuminate\Database\Eloquent\Model;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class Blob extends Model
 {
@@ -58,6 +60,43 @@ class Blob extends Model
     }
 
     /**
+     * Get public URL of this blob as stored on the conversions disk.
+     *
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute
+     */
+    protected function url(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => Storage::disk($attributes['conversions_disk'])->url($attributes['file_name']),
+        );
+    }
+    
+    /**
+     * Get public URL of the HLS playlist, if defined, as stored on the conversions disk.
+     *
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute
+     */
+    protected function hlsPlaylistUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function($value, $attributes){
+                
+                if(!$attributes['conversions']){
+                    return null;
+                }
+
+                $hlsConversion = $this->castAttribute('conversions', $attributes['conversions'])->collect()->where('type', ConversionTargets::HLS->value)->first();
+
+                if(!$hlsConversion){
+                    return null;
+                }
+
+                return Storage::disk($attributes['conversions_disk'])->url($hlsConversion['file_name']);
+            },
+        );
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\App\Models\Video 
      */
     public function video()
@@ -80,6 +119,6 @@ class Blob extends Model
      */
     public function scopeThumbnail($query)
     {
-        return $query->where('role', BlobRoles::THUMBNAIL);
+        return $query->whereIn('role', [BlobRoles::THUMBNAIL, BlobRoles::THUMBNAIL_STRIP]);
     }
 }

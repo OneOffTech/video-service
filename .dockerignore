@@ -29,3 +29,4 @@ changelogs/*
 readme.md
 contributing.md
 changelog.md
+bootstrap/cache/*.php

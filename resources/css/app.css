@@ -1,3 +1,15 @@
 @import 'tailwindcss/base';
+
 @import 'tailwindcss/components';
+
+@import 'plyr';
+
 @import 'tailwindcss/utilities';
+
+.plyr {
+    /* 
+     * To overcome the problem that a larger/taller video can make
+     * the player exceed the page height, especially during embeds 
+     */
+    @apply h-full max-h-full;
+}

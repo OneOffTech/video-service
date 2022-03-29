@@ -12,6 +12,7 @@
 
                     <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
+                    <iframe width="960" height="540" src="{{ route('videos.embed', $video) }}" class="ootvs-embed" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
