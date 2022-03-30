@@ -28,17 +28,26 @@ jobs:
         echo ${{ env.IMAGE_VERSION }}
         docker pull $NAMESPACE_DOCKER_HUB:latest || true
         docker build --compress --cache-from $NAMESPACE_DOCKER_HUB:latest --build-arg BUILD_COMMIT=$COMMIT_SHA --build-arg BUILD_VERSION=${{ env.IMAGE_VERSION }} --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') -t $NAMESPACE_DOCKER_HUB:${{ env.IMAGE_VERSION }} .
-    # - name: Prepare push
-    #   uses: azure/docker-login@v1
-    #   if: github.event_name == 'release'
-    #   with:
-    #     username: ${{ secrets.CI_REGISTRY_USER }}
-    #     password: ${{ secrets.CI_REGISTRY_PASSWORD }}
-    # - name: Push the Docker image
-    #   if: github.event_name == 'release'
-    #   run: |
-    #     export IMAGE_TAG=${IMAGE_VERSION#v}
-    #     docker tag $NAMESPACE_DOCKER_HUB:$IMAGE_VERSION $NAMESPACE_DOCKER_HUB:$IMAGE_TAG
-    #     docker tag $NAMESPACE_DOCKER_HUB:$IMAGE_TAG $NAMESPACE_DOCKER_HUB:latest
-    #     docker push $NAMESPACE_DOCKER_HUB:$IMAGE_TAG
-    #     docker push $NAMESPACE_DOCKER_HUB:latest
+    
+    - name: Prepare push
+      uses: azure/docker-login@v1
+      if: github.event_name == 'release' || github.ref == 'refs/heads/main'
+      with:
+        username: ${{ secrets.CI_REGISTRY_USER }}
+        password: ${{ secrets.CI_REGISTRY_PASSWORD }}
+    
+    - name: Push Release Docker image
+      if: github.event_name == 'release'
+      run: |
+        export IMAGE_TAG=${IMAGE_VERSION#v}
+        docker tag $NAMESPACE_DOCKER_HUB:$IMAGE_VERSION $NAMESPACE_DOCKER_HUB:$IMAGE_TAG
+        docker tag $NAMESPACE_DOCKER_HUB:$IMAGE_TAG $NAMESPACE_DOCKER_HUB:latest
+        docker push $NAMESPACE_DOCKER_HUB:$IMAGE_TAG
+        docker push $NAMESPACE_DOCKER_HUB:latest
+    
+    - name: Push Development Docker image
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        export IMAGE_TAG=main
+        docker tag $NAMESPACE_DOCKER_HUB:$IMAGE_VERSION $NAMESPACE_DOCKER_HUB:$IMAGE_TAG
+        docker push $NAMESPACE_DOCKER_HUB:$IMAGE_TAG
