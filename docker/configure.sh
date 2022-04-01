@@ -22,6 +22,10 @@ SETUP_USER=www-data
 ## Directory where the code is located
 WORKDIR=/var/www/html
 
+## Security settings
+SESSION_SECURE_COOKIE=${SESSION_SECURE_COOKIE:-"true"}
+SESSION_COOKIE_PREFIX=${SESSION_COOKIE_PREFIX:-"__Secure-"}
+
 
 function startup_config () {
     echo "Configuring..."
@@ -84,6 +88,9 @@ function write_config() {
         MAIL_FROM_NAME="${MAIL_FROM_NAME}"
         MAIL_USERNAME=${MAIL_USERNAME}
         MAIL_PASSWORD=${MAIL_PASSWORD}
+
+        SESSION_SECURE_COOKIE=${SESSION_SECURE_COOKIE}
+        SESSION_COOKIE_PREFIX=${SESSION_COOKIE_PREFIX}
 	EOM
 
     php artisan config:clear -q
