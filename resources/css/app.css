@@ -2,7 +2,7 @@
 
 @import 'tailwindcss/components';
 
-@import 'plyr';
+@import 'plyr/dist/plyr.css';
 
 @import 'tailwindcss/utilities';
 

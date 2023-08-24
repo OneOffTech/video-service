@@ -7,13 +7,11 @@
 
         <title>{{ config('app.name', 'Video Service') }}</title>
 
-        <!-- Styles -->
-        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-
-        <!-- Scripts -->
-        <script src="{{ asset('js/app.js') }}" defer></script>
-
-        <script src="{{ asset('js/video.js') }}" defer></script>
+        @vite([
+            'resources/css/app.css',
+            'resources/js/app.js',
+            'resources/js/video.js'
+        ])
         
     </head>
     <body class="font-sans antialiased">
