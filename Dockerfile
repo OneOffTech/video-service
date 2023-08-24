@@ -4,7 +4,7 @@
 
 ## 1. Builder. Collect build time dependencies and prepare the code
 
-FROM klinktech/k-box-ci-pipeline-php:8.1 AS builder
+FROM klinktechnology/k-box-ci-pipeline-php:8.1 AS builder
 
 LABEL oot.builder="video-builder"
 
@@ -20,11 +20,11 @@ RUN \
 RUN \
     yarn config set cache-folder .yarn && \
     yarn install --link-duplicates && \
-    yarn run production
+    yarn build
 
 ## 2. Packaging. Generate the production Docker image
 
-FROM php:8.1.3-fpm AS php
+FROM php:8.1.20-fpm AS php
 
 LABEL maintainer="OneOffTech <info@oneofftech.xyz>" \
   org.label-schema.name="oneofftech/video-service" \

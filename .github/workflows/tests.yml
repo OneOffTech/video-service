@@ -12,7 +12,7 @@ jobs:
     name: Tests PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
     container: 
-      image: klinktech/k-box-ci-pipeline-php:${{ matrix.php }}
+      image: klinktechnology/k-box-ci-pipeline-php:${{ matrix.php }}
       options: --user root 
     
     services:
@@ -62,7 +62,7 @@ jobs:
         composer install --prefer-dist
         yarn config set cache-folder ~/.yarn/
         yarn install --link-duplicates
-        yarn run production
+        yarn build
 
     - name: Run tests
       run: |

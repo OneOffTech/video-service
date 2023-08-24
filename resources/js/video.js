@@ -1,7 +1,7 @@
 
 import Plyr from 'plyr';
 
-import Hls from 'hls.js';
+import Hls from 'hls.js/dist/hls.min.js';
 
 window.Plyr = Plyr;
 

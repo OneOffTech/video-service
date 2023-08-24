@@ -1,4 +1,5 @@
 /node_modules
+/public/build
 /public/hot
 /public/storage
 /public/css/*
@@ -18,3 +19,4 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+/.phpunit.cache

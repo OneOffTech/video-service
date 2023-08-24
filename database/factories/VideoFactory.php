@@ -15,7 +15,7 @@ class VideoFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'user_id' => User::factory(),
@@ -31,7 +31,7 @@ class VideoFactory extends Factory
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    public function published()
+    public function published(): static
     {
         return $this->state(function (array $attributes) {
             return [
