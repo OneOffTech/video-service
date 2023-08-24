@@ -20,7 +20,7 @@ class BlobFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'video_id' => Video::factory(),
@@ -37,7 +37,7 @@ class BlobFactory extends Factory
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    public function video()
+    public function video(): static
     {
         return $this->state(function (array $attributes) {
             return [
