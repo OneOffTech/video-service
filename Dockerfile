@@ -24,7 +24,7 @@ RUN \
 
 ## 2. Packaging. Generate the production Docker image
 
-FROM php:8.1.3-fpm AS php
+FROM php:8.1.20-fpm AS php
 
 LABEL maintainer="OneOffTech <info@oneofftech.xyz>" \
   org.label-schema.name="oneofftech/video-service" \
