@@ -20,7 +20,7 @@ RUN \
 RUN \
     yarn config set cache-folder .yarn && \
     yarn install --link-duplicates && \
-    yarn run production
+    yarn build
 
 ## 2. Packaging. Generate the production Docker image
 

@@ -62,7 +62,7 @@ jobs:
         composer install --prefer-dist
         yarn config set cache-folder ~/.yarn/
         yarn install --link-duplicates
-        yarn run production
+        yarn build
 
     - name: Run tests
       run: |
