@@ -51,7 +51,7 @@ jobs:
         key: dependencies-js-${{ hashFiles('yarn.lock') }}
 
     - name: Install FFmpeg
-      uses: Iamshankhadeep/setup-ffmpeg@ffmpeg-5.0-20220119
+      uses: Iamshankhadeep/setup-ffmpeg@v1.2
       with:
         version: 5.0
       id: setup-ffmpeg
