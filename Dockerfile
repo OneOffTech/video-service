@@ -24,7 +24,7 @@ RUN \
 
 ## 2. Packaging. Generate the production Docker image
 
-FROM php:8.1.20-fpm AS php
+FROM php:8.1.22-fpm AS php
 
 LABEL maintainer="OneOffTech <info@oneofftech.xyz>" \
   org.label-schema.name="oneofftech/video-service" \
@@ -44,6 +44,8 @@ RUN apt-get update -yqq && \
         locales \
         supervisor \
         cron \
+        ca-certificates \
+        nginx \
     && curl -sSLf \
         -o /usr/local/bin/install-php-extensions \
         https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
@@ -96,32 +98,6 @@ RUN set -e; \
     && chmod +x "$linux_temp/ffmpeg" \
     && chmod +x "$linux_temp/ffprobe" \
     && rm -rf /tmp/*
-
-## NGINX installation
-### The installation procedure is heavily inspired from https://github.com/nginxinc/docker-nginx
-## TODO: Would probably be better to include NGINX installation within PHP extensions and dependencies
-RUN set -e; \
-	NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
-	NGINX_VERSION=1.20.2-1~bullseye; \
-	found=''; \
-	apt-get update; \
-	apt-get install --no-install-recommends --no-install-suggests -y gnupg1 ca-certificates; \
-	for server in \
-		hkp://keyserver.ubuntu.com:80 \
-		pgp.mit.edu \
-	; do \
-		echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
-		apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
-	done; \
-	test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
-    echo "deb https://nginx.org/packages/debian/ bullseye nginx" >> /etc/apt/sources.list.d/nginx.list \
-	&& apt-get update \
-	&& apt-get install --no-install-recommends --no-install-suggests -y \
-						ca-certificates \
-						nginx=${NGINX_VERSION} \
-    && apt-get remove --purge --auto-remove -y gnupg1  \
-    && apt-get remove --purge --auto-remove -y \
-    && rm -rf /etc/apt/sources.list.d/nginx.list
 
 ## Configure cron to run Laravel scheduler
 RUN echo '* * * * * php /var/www/html/artisan schedule:run >> /dev/null 2>&1' | crontab -
