@@ -70,7 +70,7 @@ jobs:
         php artisan view:clear
         php artisan config:clear
         php artisan route:clear
-        ./vendor/bin/phpunit --stop-on-error --stop-on-failure --filter=ConvertVideo
+        ./vendor/bin/phpunit --stop-on-error --stop-on-failure
       env:
         FFMPEG_TEMPORARY_FILES_ROOT: ${{ github.workspace }}
         DB_HOST: mariadb
