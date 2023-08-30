@@ -53,7 +53,7 @@ jobs:
     - name: Install FFmpeg
       uses: Iamshankhadeep/setup-ffmpeg@v1.2
       with:
-        version: 6.0
+        version: 5.0
       id: setup-ffmpeg
       
     - name: Install dependencies
