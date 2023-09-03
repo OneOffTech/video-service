@@ -24,7 +24,7 @@ RUN \
 
 ## 2. Packaging. Generate the production Docker image
 
-FROM php:8.1.22-fpm AS php
+FROM php:8.1.23-fpm-bullseye AS php
 
 LABEL maintainer="OneOffTech <info@oneofftech.xyz>" \
   org.label-schema.name="oneofftech/video-service" \
@@ -45,7 +45,6 @@ RUN apt-get update -yqq && \
         supervisor \
         cron \
         ca-certificates \
-        nginx \
     && curl -sSLf \
         -o /usr/local/bin/install-php-extensions \
         https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
@@ -98,6 +97,34 @@ RUN set -e; \
     && chmod +x "$linux_temp/ffmpeg" \
     && chmod +x "$linux_temp/ffprobe" \
     && rm -rf /tmp/*
+
+## NGINX installation
+### The installation procedure is heavily inspired from https://github.com/nginxinc/docker-nginx
+ENV NGINX_VERSION "1.24.0-1~bullseye"
+
+RUN set -ex \
+    && apt-get update \
+    && apt-get install --no-install-recommends --no-install-suggests -y gnupg1 ca-certificates \
+    && \
+    NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
+    NGINX_GPGKEY_PATH=/usr/share/keyrings/nginx-archive-keyring.gpg; \
+    export GNUPGHOME="$(mktemp -d)"; \
+    found=''; \
+    for server in \
+        hkp://keyserver.ubuntu.com:80 \
+        pgp.mit.edu \
+    ; do \
+        echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
+        gpg1 --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
+    done; \
+    test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
+    gpg1 --export "$NGINX_GPGKEY" > "$NGINX_GPGKEY_PATH" ; \
+    rm -rf "$GNUPGHOME"; \
+    apt-get remove --purge --auto-remove -y gnupg1 && rm -rf /var/lib/apt/lists/* \
+    && echo "deb [signed-by=$NGINX_GPGKEY_PATH] https://nginx.org/packages/debian/ bullseye nginx" >> /etc/apt/sources.list.d/nginx.list \
+	&& apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y nginx=${NGINX_VERSION} \
+    && apt-get remove --purge --auto-remove -y && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
 
 ## Configure cron to run Laravel scheduler
 RUN echo '* * * * * php /var/www/html/artisan schedule:run >> /dev/null 2>&1' | crontab -
