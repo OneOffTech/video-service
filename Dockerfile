@@ -20,7 +20,17 @@ RUN \
 RUN \
     yarn config set cache-folder .yarn && \
     yarn install --link-duplicates && \
-    yarn build
+    yarn build && \
+    rm -rf node_modules
+RUN \
+    rm -rf "docker" && \
+    rm -rf "storage" && \
+    rm -rf "resources/css" && \
+    rm -rf "resources/js" && \
+    rm -rf .env* && \
+    rm -rf yarn.lock && \
+    rm -rf *.js && \
+    rm -rf "test"
 
 ## 2. Packaging. Generate the production Docker image
 
