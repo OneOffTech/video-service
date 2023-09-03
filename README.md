@@ -39,9 +39,9 @@ the UI styling. Video elaboration stands on the shoulders of the great
 
 Given the selected stack OVS requires:
 
-- [PHP 8.0](https://www.php.net/) or above (8.1 suggested)
+- [PHP 8.1](https://www.php.net/) or above
 - [Composer 2](https://getcomposer.org/)
-- [NodeJS](https://nodejs.org/en/) version 12 or above with
+- [NodeJS](https://nodejs.org/en/) version 16 or above with
 [Yarn](https://classic.yarnpkg.com/en/docs/install) (v1.x) package manager
 - [MariaDB](https://mariadb.org/) version 10.6 or above
 - [Docker](https://www.docker.com/)
