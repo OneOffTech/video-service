@@ -26,7 +26,7 @@ class OembedController extends Controller
 
         // Get the document id from the given URL
         // TODO: maybe there will be additional routes as currently we refer to the authenticated route to show a video
-        $base_url = route('videos.show', '').'/';
+        $base_url = route('videos.index').'/';
 
         // if the url don't start with this application URL, or
         // contains query parameters => abort

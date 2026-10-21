@@ -39,10 +39,9 @@ the UI styling. Video elaboration stands on the shoulders of the great
 
 Given the selected stack OVS requires:
 
-- [PHP 8.1](https://www.php.net/) or above
+- [PHP 8.3](https://www.php.net/) or above (8.4 recommended)
 - [Composer 2](https://getcomposer.org/)
-- [NodeJS](https://nodejs.org/en/) version 16 or above with
-[Yarn](https://classic.yarnpkg.com/en/docs/install) (v1.x) package manager
+- [NodeJS](https://nodejs.org/en/) version 20 or above with the bundled npm package manager
 - [MariaDB](https://mariadb.org/) version 10.6 or above
 - [Docker](https://www.docker.com/)
 - [FFmpeg](https://ffmpeg.org/download.html) binaries available. You will need both `ffmpeg` and `ffprobe` binaries.
