@@ -84,28 +84,15 @@ RUN locale-gen "en_US.UTF-8" \
  	&& /usr/sbin/update-locale LANG="C.UTF-8"
 
 ## FFmpeg installation
-## Install the current release as available on https://johnvansickle.com/ffmpeg/
-ENV FFMPEG_BINARIES=/usr/local/bin/ffmpeg
-ENV FFPROBE_BINARIES=/usr/local/bin/ffprobe
+## Use the Debian package, the johnvansickle.com static builds segfault on Debian trixie
+## when ffprobe opens HLS playlists (their bundled glibc loads the host iconv modules)
+ENV FFMPEG_BINARIES=/usr/bin/ffmpeg
+ENV FFPROBE_BINARIES=/usr/bin/ffprobe
 
-RUN set -e; \
-    linux_url='https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz'; \
-    linux_temp_archive='/tmp/ffmpeg-release-amd64-static.tar.xz'; \
-    linux_name='ffmpeg-linux-x64'; \
-    linux_temp="/usr/local/bin/"; \
-    cd /tmp/ \
-    && echo "Downloading FFmpeg release to $linux_temp_archive" \
-    && curl -sSLf https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz -o $linux_temp_archive \
-    && echo "Downloading FFmpeg checksum to ${linux_temp_archive}.md5" \
-    && curl -sSLf https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz.md5 -o "${linux_temp_archive}.md5" \
-    && md5sum -c "${linux_temp_archive}.md5" \
-    && tar -xf $linux_temp_archive --wildcards -O '**/ffmpeg' > "$linux_temp/ffmpeg" \
-    && tar -xf $linux_temp_archive --wildcards -O '**/ffprobe' > "$linux_temp/ffprobe" \
-    && tar -xf $linux_temp_archive --wildcards -O '**/GPLv3.txt' > "$linux_temp/FFMPEG-LICENSE" \
-    && tar -xf $linux_temp_archive --wildcards -O '**/readme.txt' > "$linux_temp/FFMPEG-README.txt" \
-    && chmod +x "$linux_temp/ffmpeg" \
-    && chmod +x "$linux_temp/ffprobe" \
-    && rm -rf /tmp/*
+RUN apt-get update -yqq \
+    && apt-get install -yqq --no-install-recommends ffmpeg \
+    && apt-get clean \
+    && rm -rf /var/cache/apt/ /var/lib/apt/lists/*
 
 ## NGINX installation
 ### The installation procedure is heavily inspired from https://github.com/nginxinc/docker-nginx

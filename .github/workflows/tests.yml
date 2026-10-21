@@ -51,11 +51,12 @@ jobs:
         key: dependencies-js-${{ hashFiles('package-lock.json') }}
 
     - name: Install FFmpeg
-      uses: Iamshankhadeep/setup-ffmpeg@ffmpeg-5.0-20220119
-      with:
-        version: 5.0
-      id: setup-ffmpeg
-      
+      run: |
+        apt-get update -yqq
+        DEBIAN_FRONTEND=noninteractive apt-get install -yqq --no-install-recommends ffmpeg
+        ffprobe -version | head -n 1
+
+
     - name: Install dependencies
       run: |
         cp .env.example .env
