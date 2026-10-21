@@ -4,7 +4,7 @@
 
 ## 1. Builder. Collect build time dependencies and prepare the code
 
-FROM klinktechnology/k-box-ci-pipeline-php:8.1 AS builder
+FROM klinktechnology/k-box-ci-pipeline-php:8.4 AS builder
 
 LABEL oot.builder="video-builder"
 
@@ -18,9 +18,8 @@ RUN \
     composer install --no-dev --prefer-dist
     
 RUN \
-    yarn config set cache-folder .yarn && \
-    yarn install --link-duplicates && \
-    yarn build && \
+    npm ci && \
+    npm run build && \
     rm -rf node_modules
 RUN \
     rm -rf "docker" && \
@@ -28,13 +27,13 @@ RUN \
     rm -rf "resources/css" && \
     rm -rf "resources/js" && \
     rm -rf .env* && \
-    rm -rf yarn.lock && \
+    rm -rf package-lock.json && \
     rm -rf *.js && \
     rm -rf "test"
 
 ## 2. Packaging. Generate the production Docker image
 
-FROM php:8.1.23-fpm-bullseye AS php
+FROM php:8.4.25-fpm-trixie AS php
 
 LABEL maintainer="OneOffTech <info@oneofftech.xyz>" \
   org.label-schema.name="oneofftech/video-service" \
@@ -43,10 +42,10 @@ LABEL maintainer="OneOffTech <info@oneofftech.xyz>" \
   org.label-schema.vcs-url="https://github.com/OneOffTech/video-service/"
 
 ## Default environment variables
-ENV PHP_MAX_EXECUTION_TIME 120
-ENV PHP_MAX_INPUT_TIME 120
-ENV PHP_MEMORY_LIMIT 2048M
-ENV APP_CODE_DIR /var/www/html
+ENV PHP_MAX_EXECUTION_TIME=120
+ENV PHP_MAX_INPUT_TIME=120
+ENV PHP_MEMORY_LIMIT=2048M
+ENV APP_CODE_DIR=/var/www/html
 
 ## Install libraries, envsubst, supervisor and php modules
 RUN apt-get update -yqq && \
@@ -85,53 +84,42 @@ RUN locale-gen "en_US.UTF-8" \
  	&& /usr/sbin/update-locale LANG="C.UTF-8"
 
 ## FFmpeg installation
-## Install the current release as available on https://johnvansickle.com/ffmpeg/
-ENV FFMPEG_BINARIES /usr/local/bin/ffmpeg
-ENV FFPROBE_BINARIES /usr/local/bin/ffprobe
+## Use the Debian package, the johnvansickle.com static builds segfault on Debian trixie
+## when ffprobe opens HLS playlists (their bundled glibc loads the host iconv modules)
+ENV FFMPEG_BINARIES=/usr/bin/ffmpeg
+ENV FFPROBE_BINARIES=/usr/bin/ffprobe
 
-RUN set -e; \
-    linux_url='https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz'; \
-    linux_temp_archive='/tmp/ffmpeg-release-amd64-static.tar.xz'; \
-    linux_name='ffmpeg-linux-x64'; \
-    linux_temp="/usr/local/bin/"; \
-    cd /tmp/ \
-    && echo "Downloading FFmpeg release to $linux_temp_archive" \
-    && curl -sSLf https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz -o $linux_temp_archive \
-    && echo "Downloading FFmpeg checksum to ${linux_temp_archive}.md5" \
-    && curl -sSLf https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz.md5 -o "${linux_temp_archive}.md5" \
-    && md5sum -c "${linux_temp_archive}.md5" \
-    && tar -xf $linux_temp_archive --wildcards -O '**/ffmpeg' > "$linux_temp/ffmpeg" \
-    && tar -xf $linux_temp_archive --wildcards -O '**/ffprobe' > "$linux_temp/ffprobe" \
-    && tar -xf $linux_temp_archive --wildcards -O '**/GPLv3.txt' > "$linux_temp/FFMPEG-LICENSE" \
-    && tar -xf $linux_temp_archive --wildcards -O '**/readme.txt' > "$linux_temp/FFMPEG-README.txt" \
-    && chmod +x "$linux_temp/ffmpeg" \
-    && chmod +x "$linux_temp/ffprobe" \
-    && rm -rf /tmp/*
+RUN apt-get update -yqq \
+    && apt-get install -yqq --no-install-recommends ffmpeg \
+    && apt-get clean \
+    && rm -rf /var/cache/apt/ /var/lib/apt/lists/*
 
 ## NGINX installation
 ### The installation procedure is heavily inspired from https://github.com/nginxinc/docker-nginx
-ENV NGINX_VERSION "1.24.0-1~bullseye"
+ENV NGINX_VERSION="1.30.6-1~trixie"
 
 RUN set -ex \
     && apt-get update \
     && apt-get install --no-install-recommends --no-install-suggests -y gnupg1 ca-certificates \
     && \
-    NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
+    NGINX_GPGKEYS="573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62 8540A6F18833A80E9C1653A42FD21310B49F6B46 9E9BE90EACBCDE69FE9B204CBCDCD8A38D88A2B3"; \
     NGINX_GPGKEY_PATH=/usr/share/keyrings/nginx-archive-keyring.gpg; \
     export GNUPGHOME="$(mktemp -d)"; \
+    for NGINX_GPGKEY in $NGINX_GPGKEYS; do \
     found=''; \
     for server in \
         hkp://keyserver.ubuntu.com:80 \
         pgp.mit.edu \
     ; do \
         echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
-        gpg1 --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
+        gpg1 --batch --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
     done; \
     test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
-    gpg1 --export "$NGINX_GPGKEY" > "$NGINX_GPGKEY_PATH" ; \
+    done; \
+    gpg1 --batch --export $NGINX_GPGKEYS > "$NGINX_GPGKEY_PATH" ; \
     rm -rf "$GNUPGHOME"; \
     apt-get remove --purge --auto-remove -y gnupg1 && rm -rf /var/lib/apt/lists/* \
-    && echo "deb [signed-by=$NGINX_GPGKEY_PATH] https://nginx.org/packages/debian/ bullseye nginx" >> /etc/apt/sources.list.d/nginx.list \
+    && echo "deb [signed-by=$NGINX_GPGKEY_PATH] https://nginx.org/packages/debian/ trixie nginx" >> /etc/apt/sources.list.d/nginx.list \
 	&& apt-get update \
 	&& apt-get install --no-install-recommends --no-install-suggests -y nginx=${NGINX_VERSION} \
     && apt-get remove --purge --auto-remove -y && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
@@ -177,7 +165,7 @@ COPY \
     /var/www/html/public/ \
     /var/www/html/public/
 
-ENV STORAGE_PATH "/var/www/html/storage"
+ENV STORAGE_PATH="/var/www/html/storage"
 
 WORKDIR /var/www/html
 

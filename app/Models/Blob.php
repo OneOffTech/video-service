@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Enums\BlobRoles;
 use App\Enums\ConversionTargets;
-use Dyrynda\Database\Casts\EfficientUuid;
+use Dyrynda\Database\Support\Casts\EfficientUuid;
 use Illuminate\Database\Eloquent\Model;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;

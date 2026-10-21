@@ -17,7 +17,7 @@ jobs:
     
     services:
       mariadb:
-        image: mariadb:10.6
+        image: mariadb:11.8.9
         env:
           MYSQL_DATABASE: laravel
           MYSQL_USER: sail
@@ -26,43 +26,43 @@ jobs:
           MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
         ports:
           - 3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
 
     strategy:
       fail-fast: true
       matrix:
-        php: [8.1]
-    
+        php: [8.4]
+
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0
       with:
         fetch-depth: 1
-    
+
     - name: Cache PHP dependencies
-      uses: actions/cache@v1
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1
       with:
         path: ~/.composer/cache/files
         key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
-    
+
     - name: Cache JS dependencies
-      uses: actions/cache@v1
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1
       with:
-        path: ~/.yarn/
-        key: dependencies-js-${{ hashFiles('yarn.lock') }}
+        path: ~/.npm/
+        key: dependencies-js-${{ hashFiles('package-lock.json') }}
 
     - name: Install FFmpeg
-      uses: Iamshankhadeep/setup-ffmpeg@ffmpeg-5.0-20220119
-      with:
-        version: 5.0
-      id: setup-ffmpeg
-      
+      run: |
+        apt-get update -yqq
+        DEBIAN_FRONTEND=noninteractive apt-get install -yqq --no-install-recommends ffmpeg
+        ffprobe -version | head -n 1
+
+
     - name: Install dependencies
       run: |
         cp .env.example .env
         composer install --prefer-dist
-        yarn config set cache-folder ~/.yarn/
-        yarn install --link-duplicates
-        yarn build
+        npm ci
+        npm run build
 
     - name: Run tests
       run: |
