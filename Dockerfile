@@ -42,10 +42,10 @@ LABEL maintainer="OneOffTech <info@oneofftech.xyz>" \
   org.label-schema.vcs-url="https://github.com/OneOffTech/video-service/"
 
 ## Default environment variables
-ENV PHP_MAX_EXECUTION_TIME 120
-ENV PHP_MAX_INPUT_TIME 120
-ENV PHP_MEMORY_LIMIT 2048M
-ENV APP_CODE_DIR /var/www/html
+ENV PHP_MAX_EXECUTION_TIME=120
+ENV PHP_MAX_INPUT_TIME=120
+ENV PHP_MEMORY_LIMIT=2048M
+ENV APP_CODE_DIR=/var/www/html
 
 ## Install libraries, envsubst, supervisor and php modules
 RUN apt-get update -yqq && \
@@ -85,8 +85,8 @@ RUN locale-gen "en_US.UTF-8" \
 
 ## FFmpeg installation
 ## Install the current release as available on https://johnvansickle.com/ffmpeg/
-ENV FFMPEG_BINARIES /usr/local/bin/ffmpeg
-ENV FFPROBE_BINARIES /usr/local/bin/ffprobe
+ENV FFMPEG_BINARIES=/usr/local/bin/ffmpeg
+ENV FFPROBE_BINARIES=/usr/local/bin/ffprobe
 
 RUN set -e; \
     linux_url='https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz'; \
@@ -109,7 +109,7 @@ RUN set -e; \
 
 ## NGINX installation
 ### The installation procedure is heavily inspired from https://github.com/nginxinc/docker-nginx
-ENV NGINX_VERSION "1.30.6-1~trixie"
+ENV NGINX_VERSION="1.30.6-1~trixie"
 
 RUN set -ex \
     && apt-get update \
@@ -178,7 +178,7 @@ COPY \
     /var/www/html/public/ \
     /var/www/html/public/
 
-ENV STORAGE_PATH "/var/www/html/storage"
+ENV STORAGE_PATH="/var/www/html/storage"
 
 WORKDIR /var/www/html
 
