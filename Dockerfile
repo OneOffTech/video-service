@@ -33,7 +33,7 @@ RUN \
 
 ## 2. Packaging. Generate the production Docker image
 
-FROM php:8.4.25-fpm-trixie AS php
+FROM php:8.4.27-fpm-trixie AS php
 
 LABEL maintainer="OneOffTech <info@oneofftech.xyz>" \
   org.label-schema.name="oneofftech/video-service" \
