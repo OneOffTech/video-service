@@ -33,7 +33,7 @@ RUN \
 
 ## 2. Packaging. Generate the production Docker image
 
-FROM php:8.4.27-fpm-trixie AS php
+FROM php:8.4.28-fpm-trixie AS php
 
 LABEL maintainer="OneOffTech <info@oneofftech.xyz>" \
   org.label-schema.name="oneofftech/video-service" \
@@ -96,7 +96,7 @@ RUN apt-get update -yqq \
 
 ## NGINX installation
 ### The installation procedure is heavily inspired from https://github.com/nginxinc/docker-nginx
-ENV NGINX_VERSION="1.30.6-1~trixie"
+ENV NGINX_VERSION="1.30.7-1~trixie"
 
 RUN set -ex \
     && apt-get update \
